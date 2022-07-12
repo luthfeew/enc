@@ -4,21 +4,126 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Hello Bulma!</title>
+    <title>ENC</title>
+    <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <script src="https://kit.fontawesome.com/b69de5aa18.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
-    <section class="section">
-        <div class="container">
-            <h1 class="title">
-                Hello World
-            </h1>
+    <section class="hero is-small is-black">
+        <div class="hero-body has-text-centered">
+            <p class="title">
+                ENC
+            </p>
             <p class="subtitle">
-                My first website with <strong>Bulma</strong>!
+                File Encryption and Decryption
             </p>
         </div>
     </section>
+
+    <section class="section">
+        <div class="container is-fluid">
+            <div class="columns is-centered">
+                <div class="column is-half">
+                    <div class="box">
+
+                        <div class="tabs is-centered is-boxed">
+                            <ul style="border-color: #0a0a0a;">
+                                <li class="is-active">
+                                    <a class="has-text-black">
+                                        <span class="icon is-small"><i class="fa-solid fa-lock"
+                                                aria-hidden="true"></i></span>
+                                        <span>Encrypt</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="has-text-black">
+                                        <span class="icon is-small"><i class="fa-solid fa-lock-open"
+                                                aria-hidden="true"></i></span>
+                                        <span>Decrypt</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">mode</label>
+                            <div class="control">
+                                <input class="input is-black" type="number" value="1" readonly>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">File</label>
+                            <div class="control">
+                                <div class="file has-name is-fullwidth is-black">
+                                    <label class="file-label">
+                                        <input class="file-input" type="file">
+                                        <span class="file-cta">
+                                            <span class="file-icon">
+                                                <i class="fas fa-upload"></i>
+                                            </span>
+                                            <span class="file-label">
+                                                Choose a file…
+                                            </span>
+                                        </span>
+                                        <span class="file-name" style="border-color: #0a0a0a;">(empty)</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">Key</label>
+                            <p class="control has-icons-left">
+                                <input class="input is-black" type="text" placeholder="key min 2 max 25 char">
+                                <span class="icon is-small is-left">
+                                    <i class="fa-solid fa-key"></i>
+                                </span>
+                            </p>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">raw_data</label>
+                            <div class="control">
+                                <textarea class="textarea is-black" readonly></textarea>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">encrypted_data</label>
+                            <div class="control">
+                                <textarea class="textarea is-black" readonly></textarea>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <p class="control">
+                                <button class="button is-black is-fullwidth">
+                                    <span class="icon">
+                                        <i class="fa-solid fa-download"></i>
+                                    </span>
+                                    <span>Encrypt & Download</span>
+                                </button>
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer has-background-black">
+        <div class="content has-text-centered has-text-white">
+            <p>
+                ENC by <a href="https://github.com/luthfeew" target="_blank">Luthfi Wijaya</a>. The source code is
+                licensed
+                <a href="https://github.com/luthfeew/enc/blob/main/LICENSE" target="_blank">MIT</a>.
+            </p>
+        </div>
+    </footer>
 </body>
 
 </html>
