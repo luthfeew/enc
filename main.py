@@ -14,6 +14,8 @@ x_input = Element("x_input").element
 x_output = Element("x_output").element
 x_download = Element("x_download").element
 x_download_name = Element("x_download_name").element
+p_file = Element("p_file").element
+p_key = Element("p_key").element
 
 
 def clear_input():
@@ -22,9 +24,26 @@ def clear_input():
     file_name.innerHTML = "(empty)"
 
 
+def clear_state_file():
+    p_file.innerHTML = ""
+    file_name.style.borderColor = "#0a0a0a"
+
+
+def clear_state_key():
+    p_key.innerHTML = ""
+    x_key.classList.remove("is-danger")
+    x_key.classList.add("is-black")
+
+
+def key_input_change(event):
+    clear_state_key()
+
+
 def tab_encrypt_click(event):
     if not tab_encrypt.classList.contains("is-active"):
         x_mode.value = 1
+        clear_state_file()
+        clear_state_key()
         a_encrypt.style.borderColor = "#0a0a0a"
         a_decrypt.style.removeProperty("border-color")
         tab_encrypt.classList.add("is-active")
@@ -36,6 +55,8 @@ def tab_encrypt_click(event):
 def tab_decrypt_click(event):
     if not tab_decrypt.classList.contains("is-active"):
         x_mode.value = 0
+        clear_state_file()
+        clear_state_key()
         a_decrypt.style.borderColor = "#0a0a0a"
         a_encrypt.style.removeProperty("border-color")
         tab_decrypt.classList.add("is-active")
@@ -45,6 +66,7 @@ def tab_decrypt_click(event):
 
 
 async def file_input_change(event):
+    clear_state_file()
     fileList = file_input.files
     for f in fileList:
         reader = FileReader.new()
@@ -123,8 +145,22 @@ def decrypt(raw_data, raw_key):
 
 
 def download_click(event):
+    key = x_key.value
+
+    if file_name.innerHTML == "(empty)" or not key or len(key) < 2 or len(key) > 25:
+        if file_name.innerHTML == "(empty)":
+            file_name.style.borderColor = "#f14668"
+            p_file.classList.add("help", "is-danger")
+            p_file.innerHTML = "Please select a file."
+        if not key or len(key) < 2 or len(key) > 25:
+            x_key.classList.remove("is-black")
+            x_key.classList.add("is-danger")
+            p_key.classList.add("help", "is-danger")
+            p_key.innerHTML = "Key must be between 2 and 25 characters."
+        return
+
     if int(x_mode.value) == 1:
-        x_output.value = encrypt(x_input.value, x_key.value)
+        x_output.value = encrypt(x_input.value, key)
 
         link = window.document.createElement("a")
         link.setAttribute(
@@ -134,7 +170,7 @@ def download_click(event):
         link.setAttribute("download", file_name.innerHTML + ".enc")
         link.click()
     else:
-        x_output.value = decrypt(x_input.value, x_key.value)
+        x_output.value = decrypt(x_input.value, key)
         x = x_output.value.split("|||||")
 
         uint8 = []
@@ -159,6 +195,7 @@ def main():
     tab_encrypt.addEventListener("click", create_proxy(tab_encrypt_click))
     tab_decrypt.addEventListener("click", create_proxy(tab_decrypt_click))
     file_input.addEventListener("change", create_proxy(file_input_change))
+    x_key.addEventListener("input", create_proxy(key_input_change))
     x_download.addEventListener("click", create_proxy(download_click))
 
 
