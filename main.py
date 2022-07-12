@@ -16,6 +16,7 @@ x_download = Element("x_download").element
 x_download_name = Element("x_download_name").element
 p_file = Element("p_file").element
 p_key = Element("p_key").element
+invalid_key = Element("invalid_key").element
 
 
 def clear_input():
@@ -33,6 +34,7 @@ def clear_state_key():
     p_key.innerHTML = ""
     x_key.classList.remove("is-danger")
     x_key.classList.add("is-black")
+    invalid_key.classList.add("is-hidden")
 
 
 def key_input_change(event):
@@ -171,7 +173,13 @@ def download_click(event):
         link.click()
     else:
         x_output.value = decrypt(x_input.value, key)
-        x = x_output.value.split("|||||")
+        key_valid = x_output.value.find("|||||", 0, 100)
+
+        if key_valid == -1:
+            invalid_key.classList.remove("is-hidden")
+            return
+        else:
+            x = x_output.value.split("|||||")
 
         uint8 = []
         for i in range(0, len(x[1]), 2):
