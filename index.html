@@ -7,6 +7,7 @@
     <title>ENC</title>
     <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
     <script src="https://kit.fontawesome.com/b69de5aa18.js" crossorigin="anonymous"></script>
 </head>
 
@@ -22,7 +23,7 @@
         </div>
     </section>
 
-    <section class="section">
+    <section class="section my-6">
         <div class="container is-fluid">
             <div class="columns is-centered">
                 <div class="column is-half">
@@ -30,15 +31,15 @@
 
                         <div class="tabs is-centered is-boxed">
                             <ul style="border-color: #0a0a0a;">
-                                <li class="is-active">
-                                    <a class="has-text-black">
+                                <li class="is-active" id="tab_encrypt">
+                                    <a class="has-text-black" id="a_encrypt" style="border-color: #0a0a0a;">
                                         <span class="icon is-small"><i class="fa-solid fa-lock"
                                                 aria-hidden="true"></i></span>
                                         <span>Encrypt</span>
                                     </a>
                                 </li>
-                                <li>
-                                    <a class="has-text-black">
+                                <li id="tab_decrypt">
+                                    <a class="has-text-black" id="a_decrypt">
                                         <span class="icon is-small"><i class="fa-solid fa-lock-open"
                                                 aria-hidden="true"></i></span>
                                         <span>Decrypt</span>
@@ -47,10 +48,10 @@
                             </ul>
                         </div>
 
-                        <div class="field">
+                        <div class="field is-hidden">
                             <label class="label">mode</label>
                             <div class="control">
-                                <input class="input is-black" type="number" value="1" readonly>
+                                <input class="input is-black" type="text" value="1" id="x_mode">
                             </div>
                         </div>
 
@@ -59,7 +60,7 @@
                             <div class="control">
                                 <div class="file has-name is-fullwidth is-black">
                                     <label class="file-label">
-                                        <input class="file-input" type="file">
+                                        <input class="file-input" type="file" id="file_input">
                                         <span class="file-cta">
                                             <span class="file-icon">
                                                 <i class="fas fa-upload"></i>
@@ -68,7 +69,8 @@
                                                 Choose a file…
                                             </span>
                                         </span>
-                                        <span class="file-name" style="border-color: #0a0a0a;">(empty)</span>
+                                        <span class="file-name" style="border-color: #0a0a0a;"
+                                            id="file_name">(empty)</span>
                                     </label>
                                 </div>
                             </div>
@@ -77,34 +79,35 @@
                         <div class="field">
                             <label class="label">Key</label>
                             <p class="control has-icons-left">
-                                <input class="input is-black" type="text" placeholder="key min 2 max 25 char">
+                                <input class="input is-black" type="text" placeholder="key min 2 max 25 char"
+                                    id="x_key">
                                 <span class="icon is-small is-left">
                                     <i class="fa-solid fa-key"></i>
                                 </span>
                             </p>
                         </div>
 
-                        <div class="field">
+                        <div class="field is-hidden">
                             <label class="label">raw_data</label>
                             <div class="control">
-                                <textarea class="textarea is-black" readonly></textarea>
+                                <textarea class="textarea is-black" readonly id="x_input"></textarea>
                             </div>
                         </div>
 
-                        <div class="field">
-                            <label class="label">encrypted_data</label>
+                        <div class="field is-hidden">
+                            <label class="label">output_data</label>
                             <div class="control">
-                                <textarea class="textarea is-black" readonly></textarea>
+                                <textarea class="textarea is-black" readonly id="x_output"></textarea>
                             </div>
                         </div>
 
                         <div class="field">
                             <p class="control">
-                                <button class="button is-black is-fullwidth">
+                                <button class="button is-black is-fullwidth" id="x_download">
                                     <span class="icon">
                                         <i class="fa-solid fa-download"></i>
                                     </span>
-                                    <span>Encrypt & Download</span>
+                                    <span id="x_download_name">Encrypt & Download</span>
                                 </button>
                             </p>
                         </div>
@@ -124,6 +127,8 @@
             </p>
         </div>
     </footer>
+
+    <py-script src="./main.py"></py-script>
 </body>
 
 </html>
