@@ -22,7 +22,7 @@ invalid_key = Element("invalid_key").element
 def clear_input():
     x_input.value = ""
     x_output.value = ""
-    file_name.innerHTML = "(empty)"
+    file_name.innerHTML = "(kosong)"
 
 
 def clear_state_file():
@@ -50,7 +50,7 @@ def tab_encrypt_click(event):
         a_decrypt.style.removeProperty("border-color")
         tab_encrypt.classList.add("is-active")
         tab_decrypt.classList.remove("is-active")
-        x_download_name.innerHTML = "Encrypt & Download"
+        x_download_name.innerHTML = "Enkripsi & Download"
         clear_input()
 
 
@@ -63,7 +63,7 @@ def tab_decrypt_click(event):
         a_encrypt.style.removeProperty("border-color")
         tab_decrypt.classList.add("is-active")
         tab_encrypt.classList.remove("is-active")
-        x_download_name.innerHTML = "Decrypt & Download"
+        x_download_name.innerHTML = "Dekripsi & Download"
         clear_input()
 
 
@@ -149,16 +149,16 @@ def decrypt(raw_data, raw_key):
 def download_click(event):
     key = x_key.value
 
-    if file_name.innerHTML == "(empty)" or not key or len(key) < 2 or len(key) > 25:
-        if file_name.innerHTML == "(empty)":
+    if file_name.innerHTML == "(kosong)" or not key or len(key) < 2 or len(key) > 25:
+        if file_name.innerHTML == "(kosong)":
             file_name.style.borderColor = "#f14668"
             p_file.classList.add("help", "is-danger")
-            p_file.innerHTML = "Please select a file."
+            p_file.innerHTML = "Pilih file terlebih dahulu."
         if not key or len(key) < 2 or len(key) > 25:
             x_key.classList.remove("is-black")
             x_key.classList.add("is-danger")
             p_key.classList.add("help", "is-danger")
-            p_key.innerHTML = "Key must be between 2 and 25 characters."
+            p_key.innerHTML = "Kunci harus terdiri dari 2-25 karakter."
         return
 
     if int(x_mode.value) == 1:
