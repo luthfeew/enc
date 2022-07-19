@@ -86,13 +86,17 @@ def tab_decrypt_click(event):
 # fungsi untuk menghandle perubahan input file
 async def file_input_change(event):
     clear_state_file()
+    # baca file yang diupload
     fileList = file_input.files
     for f in fileList:
+        # load module FileReader
         reader = FileReader.new()
+        # jika mode enkripsi
         if int(x_mode.value) == 1:
             x_input.value = f.name + "|||||"
             reader.readAsArrayBuffer(f)
             reader.onloadend = write_buffer_hex
+        # jika mode dekripsi
         else:
             reader.readAsText(f)
             reader.onloadend = write_buffer_text
@@ -171,6 +175,7 @@ def decrypt(raw_data, raw_key):
 def download_click(event):
     key = x_key.value
 
+    # validasi file yang diupload dan kunci
     if file_name.innerHTML == "(kosong)" or not key or len(key) < 2 or len(key) > 25:
         if file_name.innerHTML == "(kosong)":
             file_name.style.borderColor = "#f14668"
@@ -183,9 +188,11 @@ def download_click(event):
             p_key.innerHTML = "Kunci harus terdiri dari 2-25 karakter."
         return
 
+    # jika mode enkripsi
     if int(x_mode.value) == 1:
         x_output.value = encrypt(x_input.value, key)
 
+        # buat element untuk download file yang telah dienkripsi
         link = window.document.createElement("a")
         link.setAttribute(
             "href",
@@ -193,16 +200,21 @@ def download_click(event):
         )
         link.setAttribute("download", file_name.innerHTML + ".enc")
         link.click()
+    # jika mode dekripsi
     else:
         x_output.value = decrypt(x_input.value, key)
         key_valid = x_output.value.find("|||||", 0, 100)
 
+        # validasi kunci
+        # jika kunci tidak valid
         if key_valid == -1:
             invalid_key.classList.remove("is-hidden")
             return
+        # jika kunci valid
         else:
             x = x_output.value.split("|||||")
 
+        # proses mengembalikan file yang telah dienkripsi ke bentuk file yang asli
         uint8 = []
         for i in range(0, len(x[1]), 2):
             uint8.append(int(x[1][i : i + 2], 16))
@@ -212,6 +224,7 @@ def download_click(event):
         file_blob = Blob.new([file], {"type": "application/octet-stream"})
         file_url = URL.createObjectURL(file_blob)
 
+        # buat element untuk download file yang telah didekripsi
         link = window.document.createElement("a")
         link.setAttribute(
             "href",
@@ -223,6 +236,7 @@ def download_click(event):
 
 # fungsi main
 def main():
+    # definisikan event listener/handler
     tab_encrypt.addEventListener("click", create_proxy(tab_encrypt_click))
     tab_decrypt.addEventListener("click", create_proxy(tab_decrypt_click))
     file_input.addEventListener("change", create_proxy(file_input_change))
