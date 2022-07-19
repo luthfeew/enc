@@ -17,6 +17,7 @@ x_download_name = Element("x_download_name").element
 p_file = Element("p_file").element
 p_key = Element("p_key").element
 invalid_key = Element("invalid_key").element
+cb_key = Element("cb_key").element
 
 
 def clear_input():
@@ -39,6 +40,13 @@ def clear_state_key():
 
 def key_input_change(event):
     clear_state_key()
+
+
+def checkbox_change(event):
+    if cb_key.checked:
+        x_key.type = "text"
+    else:
+        x_key.type = "password"
 
 
 def tab_encrypt_click(event):
@@ -205,6 +213,7 @@ def main():
     file_input.addEventListener("change", create_proxy(file_input_change))
     x_key.addEventListener("input", create_proxy(key_input_change))
     x_download.addEventListener("click", create_proxy(download_click))
+    cb_key.addEventListener("change", create_proxy(checkbox_change))
 
 
 main()
