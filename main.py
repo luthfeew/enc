@@ -1,7 +1,9 @@
+# import library
 import base64
 from pyodide import create_proxy
 from js import FileReader, Uint8Array, window, encodeURIComponent, File, Blob, URL
 
+# deklarasi variable dari html
 a_encrypt = Element("a_encrypt").element
 a_decrypt = Element("a_decrypt").element
 tab_encrypt = Element("tab_encrypt").element
@@ -19,18 +21,20 @@ p_key = Element("p_key").element
 invalid_key = Element("invalid_key").element
 cb_key = Element("cb_key").element
 
-
+# fungsi hapus input
 def clear_input():
     x_input.value = ""
     x_output.value = ""
     file_name.innerHTML = "(kosong)"
 
 
+# fungsi hapus status file
 def clear_state_file():
     p_file.innerHTML = ""
     file_name.style.borderColor = "#0a0a0a"
 
 
+# fungsi hapus status kunci
 def clear_state_key():
     p_key.innerHTML = ""
     x_key.classList.remove("is-danger")
@@ -38,10 +42,12 @@ def clear_state_key():
     invalid_key.classList.add("is-hidden")
 
 
+# fungsi untuk menghandle perubahan input kunci
 def key_input_change(event):
     clear_state_key()
 
 
+# fungsi untuk menghandle checkbok tampilkan kunci
 def checkbox_change(event):
     if cb_key.checked:
         x_key.type = "text"
@@ -49,6 +55,7 @@ def checkbox_change(event):
         x_key.type = "password"
 
 
+# fungsi untuk menghandle tab encrypt
 def tab_encrypt_click(event):
     if not tab_encrypt.classList.contains("is-active"):
         x_mode.value = 1
@@ -62,6 +69,7 @@ def tab_encrypt_click(event):
         clear_input()
 
 
+# fungsi untuk menghandle tab decrypt
 def tab_decrypt_click(event):
     if not tab_decrypt.classList.contains("is-active"):
         x_mode.value = 0
@@ -75,6 +83,7 @@ def tab_decrypt_click(event):
         clear_input()
 
 
+# fungsi untuk menghandle perubahan input file
 async def file_input_change(event):
     clear_state_file()
     fileList = file_input.files
@@ -92,6 +101,7 @@ async def file_input_change(event):
     file_input.value = ""
 
 
+# fungsi untuk convert array buffer ke hex
 def write_buffer_hex(event):
     x = Uint8Array.new(event.target.result)
 
@@ -102,10 +112,12 @@ def write_buffer_hex(event):
     x_input.value += hex
 
 
+# fungsi untuk convert array buffer ke text
 def write_buffer_text(event):
     x_input.value = event.target.result
 
 
+# fungsi untuk mengenkripsi
 def encrypt(raw_data, raw_key):
     key = raw_key.lower()
 
@@ -129,6 +141,7 @@ def encrypt(raw_data, raw_key):
     return base64.a85encode(ciphertext.encode("utf-8")).decode("utf-8")
 
 
+# fungsi untuk mendekripsi
 def decrypt(raw_data, raw_key):
     key = raw_key.lower()
 
@@ -154,6 +167,7 @@ def decrypt(raw_data, raw_key):
     return plaintext
 
 
+# fungsi untuk menghandle tombol download
 def download_click(event):
     key = x_key.value
 
@@ -207,6 +221,7 @@ def download_click(event):
         link.click()
 
 
+# fungsi main
 def main():
     tab_encrypt.addEventListener("click", create_proxy(tab_encrypt_click))
     tab_decrypt.addEventListener("click", create_proxy(tab_decrypt_click))
@@ -216,4 +231,5 @@ def main():
     cb_key.addEventListener("change", create_proxy(checkbox_change))
 
 
+# menjalankan fungsi main
 main()
