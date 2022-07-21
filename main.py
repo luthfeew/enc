@@ -115,18 +115,26 @@ async def file_input_change(event):
             # jika mode enkripsi
             if int(x_mode.value) == 1:
                 x_input.value = "abcdefghijklmnopqrstuvwxyz|||||"
-                for i in range(chunk_count):
+                n = 0
+                while n < chunk_count:
                     reader = FileReader.new()
+                    reader.addEventListener("load", create_proxy(write_buffer_hex))
                     reader.readAsArrayBuffer(
-                        f.slice(i * chunk_size, (i + 1) * chunk_size)
+                        f.slice(n * chunk_size, (n + 1) * chunk_size)
                     )
-                    reader.onloadend = write_buffer_hex
+                    await asyncio.sleep(0.1)
+                    n += 1
+                    progress_bar()
             # jika mode dekripsi
             else:
-                for i in range(chunk_count):
+                n = 0
+                while n < chunk_count:
                     reader = FileReader.new()
-                    reader.readAsText(f.slice(i * chunk_size, (i + 1) * chunk_size))
-                    reader.onloadend = write_buffer_text
+                    reader.addEventListener("load", create_proxy(write_buffer_text))
+                    reader.readAsText(f.slice(n * chunk_size, (n + 1) * chunk_size))
+                    await asyncio.sleep(0.1)
+                    n += 1
+                    progress_bar()
         file_name.innerHTML = f.name
 
     file_input.value = ""
@@ -141,13 +149,11 @@ def write_buffer_hex(event):
         hex += "%02x" % x[i]
 
     x_input.value += hex
-    progress_bar()
 
 
 # fungsi untuk convert array buffer ke text
 def write_buffer_text(event):
     x_input.value += event.target.result
-    progress_bar()
 
 
 # fungsi untuk mengenkripsi
@@ -223,6 +229,7 @@ def decrypt(raw_data, raw_key):
 # fungsi untuk menghandle tombol download
 async def download_click(event):
     x_output.value = ""
+    x_download.classList.add("is-loading")
     key = x_key.value
 
     # validasi file yang diupload dan kunci
@@ -238,15 +245,15 @@ async def download_click(event):
             p_key.innerHTML = "Kunci harus terdiri dari 2-25 karakter."
         return
 
+    # split data menjadi chunk
+    size = len(x_input.value)
+    chunk_size = 1024 * 500
+    chunk_count = int(size / chunk_size) + 1
+    chunk_total.value = chunk_count
+    chunk_now.value = 0
+
     # jika mode enkripsi
     if int(x_mode.value) == 1:
-        # split data menjadi chunk
-        size = len(x_input.value)
-        chunk_size = 1024 * 500
-        chunk_count = int(size / chunk_size) + 1
-        chunk_total.value = chunk_count
-        chunk_now.value = 0
-
         for i in range(chunk_count):
             raw_data = x_input.value[i * chunk_size : (i + 1) * chunk_size]
             encrypt(raw_data, key)
@@ -262,13 +269,6 @@ async def download_click(event):
         link.click()
     # jika mode dekripsi
     else:
-        # split data menjadi chunk
-        size = len(x_input.value)
-        chunk_size = 1024 * 500
-        chunk_count = int(size / chunk_size) + 1
-        chunk_total.value = chunk_count
-        chunk_now.value = 0
-
         for i in range(chunk_count):
             raw_data = x_input.value[i * chunk_size : (i + 1) * chunk_size]
             decrypt(raw_data, key)
@@ -307,6 +307,8 @@ async def download_click(event):
         )
         link.setAttribute("download", str(file_name.innerHTML[0:-4]))
         link.click()
+
+    x_download.classList.remove("is-loading")
 
 
 # fungsi main
