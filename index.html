@@ -75,6 +75,7 @@
                                 </div>
                                 <p id="p_file"></p>
                             </div>
+                            <progress class="progress mt-3" value="0" max="100" id="progress"></progress>
                         </div>
 
                         <div class="field">
@@ -92,6 +93,9 @@
                                 Tampilkan kunci
                             </label>
                         </div>
+
+                        <input class="is-hidden" type="text" id="chunk_total">
+                        <input class="is-hidden" type="text" id="chunk_now" value="0">
 
                         <div class="field is-hidden">
                             <label class="label">raw_data</label>
@@ -133,7 +137,7 @@
     <footer class="footer has-background-black">
         <div class="content has-text-centered has-text-white">
             <p>
-                © 2022 PT. Lintas Agri Punakawan
+                © 2022 PT Lintas Agri Punakawan
             </p>
         </div>
     </footer>

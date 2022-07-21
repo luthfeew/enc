@@ -1,5 +1,4 @@
 # import library
-import base64
 from pyodide import create_proxy
 from js import FileReader, Uint8Array, window, encodeURIComponent, File, Blob, URL
 
@@ -20,12 +19,17 @@ p_file = Element("p_file").element
 p_key = Element("p_key").element
 invalid_key = Element("invalid_key").element
 cb_key = Element("cb_key").element
+progress = Element("progress").element
+chunk_total = Element("chunk_total").element
+chunk_now = Element("chunk_now").element
 
 # fungsi hapus input
 def clear_input():
     x_input.value = ""
     x_output.value = ""
     file_name.innerHTML = "(kosong)"
+    chunk_now.value = 0
+    progress.value = 0
 
 
 # fungsi hapus status file
@@ -85,21 +89,31 @@ def tab_decrypt_click(event):
 
 # fungsi untuk menghandle perubahan input file
 async def file_input_change(event):
+    progress.value = 0
     clear_state_file()
     # baca file yang diupload
     fileList = file_input.files
     for f in fileList:
-        # load module FileReader
-        reader = FileReader.new()
-        # jika mode enkripsi
-        if int(x_mode.value) == 1:
-            x_input.value = f.name + "|||||"
-            reader.readAsArrayBuffer(f)
-            reader.onloadend = write_buffer_hex
-        # jika mode dekripsi
-        else:
-            reader.readAsText(f)
-            reader.onloadend = write_buffer_text
+        size = f.size
+        chunk_size = 500000
+        chunk_count = int(size / chunk_size) + 1
+        chunk_total.value = chunk_count
+        if size > chunk_size or size > 0:
+            # jika mode enkripsi
+            if int(x_mode.value) == 1:
+                x_input.value = "abcdefghijklmnopqrstuvwxyz|||||"
+                for i in range(chunk_count):
+                    reader = FileReader.new()
+                    reader.readAsArrayBuffer(
+                        f.slice(i * chunk_size, (i + 1) * chunk_size)
+                    )
+                    reader.onloadend = write_buffer_hex
+            # jika mode dekripsi
+            else:
+                for i in range(chunk_count):
+                    reader = FileReader.new()
+                    reader.readAsText(f.slice(i * chunk_size, (i + 1) * chunk_size))
+                    reader.onloadend = write_buffer_text
         file_name.innerHTML = f.name
 
     file_input.value = ""
@@ -114,11 +128,18 @@ def write_buffer_hex(event):
         hex += "%02x" % x[i]
 
     x_input.value += hex
+    progress_bar()
 
 
 # fungsi untuk convert array buffer ke text
 def write_buffer_text(event):
-    x_input.value = event.target.result
+    x_input.value += event.target.result
+    progress_bar()
+
+
+def progress_bar():
+    chunk_now.value = int(chunk_now.value) + 1
+    progress.value = int(chunk_now.value) / int(chunk_total.value) * 100
 
 
 # fungsi untuk mengenkripsi
@@ -135,14 +156,24 @@ def encrypt(raw_data, raw_key):
 
     for i in range(len(raw_data)):
         char0 = raw_data[i]
-        if count < len(num_key):
-            key1 = num_key[count]
-            ciphertext += bytes([(ord(char0) + key1) % 256]).decode("latin-1")
-            count += 1
-        if count == len(num_key):
-            count = 0
+        char = char0.lower()
+        if char == " ":
+            ciphertext += " "
+        elif char == ".":
+            ciphertext += "."
+        elif char == "|":
+            ciphertext += "|"
+        elif char.isdigit():
+            ciphertext += char
+        elif char.isalpha():
+            if count < len(num_key):
+                key1 = num_key[count]
+                ciphertext += chr((ord(char) + key1 - 97) % 26 + 97)
+                count += 1
+            if count == len(num_key):
+                count = 0
 
-    return base64.a85encode(ciphertext.encode("utf-8")).decode("utf-8")
+    return ciphertext
 
 
 # fungsi untuk mendekripsi
@@ -154,19 +185,27 @@ def decrypt(raw_data, raw_key):
         key1 = key[i]
         num_key.append(ord(key1) - 97)
 
-    ciphertext = base64.a85decode(raw_data).decode("utf-8")
-
     count = 0
     plaintext = ""
 
-    for i in range(len(ciphertext)):
-        char0 = ciphertext[i]
-        if count < len(num_key):
-            key1 = num_key[count]
-            plaintext += bytes([(ord(char0) - key1) % 256]).decode("latin-1")
-            count += 1
-        if count == len(num_key):
-            count = 0
+    for i in range(len(raw_data)):
+        char0 = raw_data[i]
+        char = char0.lower()
+        if char == " ":
+            plaintext += " "
+        elif char == ".":
+            plaintext += "."
+        elif char == "|":
+            plaintext += "|"
+        elif char.isdigit():
+            plaintext += char
+        elif char.isalpha():
+            if count < len(num_key):
+                key1 = num_key[count]
+                plaintext += chr((ord(char) - key1 - 97) % 26 + 97)
+                count += 1
+            if count == len(num_key):
+                count = 0
 
     return plaintext
 
@@ -203,7 +242,7 @@ def download_click(event):
     # jika mode dekripsi
     else:
         x_output.value = decrypt(x_input.value, key)
-        key_valid = x_output.value.find("|||||", 0, 100)
+        key_valid = x_output.value.find("abcdefghijklmnopqrstuvwxyz", 0, 30)
 
         # validasi kunci
         # jika kunci tidak valid
@@ -220,7 +259,11 @@ def download_click(event):
             uint8.append(int(x[1][i : i + 2], 16))
         raw_uint8 = Uint8Array.new(uint8)
         raw_arraybuffer = raw_uint8.buffer
-        file = File.new([raw_arraybuffer], x[0], {"type": "application/octet-stream"})
+        file = File.new(
+            [raw_arraybuffer],
+            str(file_name.innerHTML[0:-4]),
+            {"type": "application/octet-stream"},
+        )
         file_blob = Blob.new([file], {"type": "application/octet-stream"})
         file_url = URL.createObjectURL(file_blob)
 
@@ -230,7 +273,7 @@ def download_click(event):
             "href",
             file_url,
         )
-        link.setAttribute("download", x[0])
+        link.setAttribute("download", str(file_name.innerHTML[0:-4]))
         link.click()
 
 
