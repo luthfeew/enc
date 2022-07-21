@@ -1,4 +1,5 @@
 # import library
+import asyncio
 from pyodide import create_proxy
 from js import FileReader, Uint8Array, window, encodeURIComponent, File, Blob, URL
 
@@ -20,6 +21,7 @@ p_key = Element("p_key").element
 invalid_key = Element("invalid_key").element
 cb_key = Element("cb_key").element
 progress = Element("progress").element
+progress2 = Element("progress2").element
 chunk_total = Element("chunk_total").element
 chunk_now = Element("chunk_now").element
 
@@ -30,6 +32,7 @@ def clear_input():
     file_name.innerHTML = "(kosong)"
     chunk_now.value = 0
     progress.value = 0
+    progress2.value = 0
 
 
 # fungsi hapus status file
@@ -57,6 +60,16 @@ def checkbox_change(event):
         x_key.type = "text"
     else:
         x_key.type = "password"
+
+
+def progress_bar():
+    chunk_now.value = int(chunk_now.value) + 1
+    progress.value = int(chunk_now.value) / int(chunk_total.value) * 100
+
+
+def progress_bar2():
+    chunk_now.value = int(chunk_now.value) + 1
+    progress2.value = int(chunk_now.value) / int(chunk_total.value) * 100
 
 
 # fungsi untuk menghandle tab encrypt
@@ -137,11 +150,6 @@ def write_buffer_text(event):
     progress_bar()
 
 
-def progress_bar():
-    chunk_now.value = int(chunk_now.value) + 1
-    progress.value = int(chunk_now.value) / int(chunk_total.value) * 100
-
-
 # fungsi untuk mengenkripsi
 def encrypt(raw_data, raw_key):
     key = raw_key.lower()
@@ -173,7 +181,8 @@ def encrypt(raw_data, raw_key):
             if count == len(num_key):
                 count = 0
 
-    return ciphertext
+    progress_bar2()
+    x_output.value += ciphertext
 
 
 # fungsi untuk mendekripsi
@@ -207,11 +216,13 @@ def decrypt(raw_data, raw_key):
             if count == len(num_key):
                 count = 0
 
-    return plaintext
+    progress_bar2()
+    x_output.value += plaintext
 
 
 # fungsi untuk menghandle tombol download
-def download_click(event):
+async def download_click(event):
+    x_output.value = ""
     key = x_key.value
 
     # validasi file yang diupload dan kunci
@@ -229,7 +240,17 @@ def download_click(event):
 
     # jika mode enkripsi
     if int(x_mode.value) == 1:
-        x_output.value = encrypt(x_input.value, key)
+        # split data menjadi chunk
+        size = len(x_input.value)
+        chunk_size = 1024 * 500
+        chunk_count = int(size / chunk_size) + 1
+        chunk_total.value = chunk_count
+        chunk_now.value = 0
+
+        for i in range(chunk_count):
+            raw_data = x_input.value[i * chunk_size : (i + 1) * chunk_size]
+            encrypt(raw_data, key)
+            await asyncio.sleep(0.01)
 
         # buat element untuk download file yang telah dienkripsi
         link = window.document.createElement("a")
@@ -241,7 +262,18 @@ def download_click(event):
         link.click()
     # jika mode dekripsi
     else:
-        x_output.value = decrypt(x_input.value, key)
+        # split data menjadi chunk
+        size = len(x_input.value)
+        chunk_size = 1024 * 500
+        chunk_count = int(size / chunk_size) + 1
+        chunk_total.value = chunk_count
+        chunk_now.value = 0
+
+        for i in range(chunk_count):
+            raw_data = x_input.value[i * chunk_size : (i + 1) * chunk_size]
+            decrypt(raw_data, key)
+            await asyncio.sleep(0.01)
+
         key_valid = x_output.value.find("abcdefghijklmnopqrstuvwxyz", 0, 30)
 
         # validasi kunci
