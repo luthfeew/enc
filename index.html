@@ -18,7 +18,7 @@
                 ENC
             </p>
             <p class="subtitle">
-                File Encryption and Decryption
+                File Enkripsi dan Dekripsi
             </p>
         </div>
     </section>
@@ -35,14 +35,14 @@
                                     <a class="has-text-black" id="a_encrypt" style="border-color: #0a0a0a;">
                                         <span class="icon is-small"><i class="fa-solid fa-lock"
                                                 aria-hidden="true"></i></span>
-                                        <span>Encrypt</span>
+                                        <span>Enkripsi</span>
                                     </a>
                                 </li>
                                 <li id="tab_decrypt">
                                     <a class="has-text-black" id="a_decrypt">
                                         <span class="icon is-small"><i class="fa-solid fa-lock-open"
                                                 aria-hidden="true"></i></span>
-                                        <span>Decrypt</span>
+                                        <span>Dekripsi</span>
                                     </a>
                                 </li>
                             </ul>
@@ -66,28 +66,36 @@
                                                 <i class="fas fa-upload"></i>
                                             </span>
                                             <span class="file-label">
-                                                Choose a file…
+                                                Pilih file…
                                             </span>
                                         </span>
                                         <span class="file-name" style="border-color: #0a0a0a;"
-                                            id="file_name">(empty)</span>
+                                            id="file_name">(kosong)</span>
                                     </label>
                                 </div>
                                 <p id="p_file"></p>
                             </div>
+                            <progress class="progress mt-3" value="0" max="100" id="progress"></progress>
                         </div>
 
                         <div class="field">
-                            <label class="label">Key</label>
+                            <label class="label">Kunci</label>
                             <p class="control has-icons-left">
-                                <input class="input is-black" type="text" placeholder="key min 2 max 25 char"
-                                    id="x_key">
+                                <input class="input is-black" type="password"
+                                    placeholder="kunci minimal 2 karakter maksimal 25 karakter" id="x_key">
                                 <span class="icon is-small is-left">
                                     <i class="fa-solid fa-key"></i>
                                 </span>
-                            <p id="p_key"></p>
                             </p>
+                            <p id="p_key"></p>
+                            <label class="checkbox">
+                                <input type="checkbox" id="cb_key">
+                                Tampilkan kunci
+                            </label>
                         </div>
+
+                        <input class="is-hidden" type="text" id="chunk_total">
+                        <input class="is-hidden" type="text" id="chunk_now" value="0">
 
                         <div class="field is-hidden">
                             <label class="label">raw_data</label>
@@ -104,19 +112,20 @@
                         </div>
 
                         <div class="field">
+                            <progress class="progress mb-3" value="0" max="100" id="progress2"></progress>
                             <p class="control">
                                 <button class="button is-black is-fullwidth" id="x_download">
                                     <span class="icon">
                                         <i class="fa-solid fa-download"></i>
                                     </span>
-                                    <span id="x_download_name">Encrypt & Download</span>
+                                    <span id="x_download_name">Enkripsi & Download</span>
                                 </button>
                             </p>
                         </div>
 
                         <article class="message is-danger is-hidden" id="invalid_key">
                             <div class="message-body">
-                                <strong>ERROR:</strong> Invalid Key
+                                <strong>ERROR:</strong> Kunci salah
                             </div>
                         </article>
 
@@ -129,9 +138,7 @@
     <footer class="footer has-background-black">
         <div class="content has-text-centered has-text-white">
             <p>
-                ENC by <a class="has-text-white" href="https://github.com/luthfeew" target="_blank">Luthfi Wijaya</a>
-                & Ardan Ariojati. The source code is licensed
-                <a class="has-text-white" href="https://github.com/luthfeew/enc/blob/main/LICENSE" target="_blank">MIT</a>.
+                © 2022 PT Lintas Agri Punakawan
             </p>
         </div>
     </footer>
